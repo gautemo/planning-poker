@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p v-if="cards.length === 0">No players has joined yet</p>
+        <p class="no" v-if="cards.length === 0">No players has joined yet</p>
         <div v-else class="stats" :class="{ hide: !turned }">
             <p>Most voted: <b>{{most}}</b></p>
             <p>Average: <b>{{avg}}</b></p>
@@ -40,11 +40,12 @@ export default {
         },
         avg(){
             const numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
-            return numbers.reduce((a,b) => a + b, 0) / numbers.length
+            const avg = numbers.reduce((a,b) => a + b, 0) / numbers.length
+            return parseFloat(avg.toFixed(1));
         },
         most(){
             let numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
-            numbers = numbers.sort((a,b) => numbers.filter(v => v===a).length - numbers.filter(v => v===b).length);
+            numbers.sort((a,b) => numbers.filter(v => v===b).length - numbers.filter(v => v===a).length);
             let single = [...new Set(numbers)];
             single = single.filter(n => numbers.filter(v => v===numbers[0]).length === numbers.filter(v => v===n).length);
             if(single.length === 1){
@@ -91,9 +92,15 @@ p{
 
 .stats{
     transition: opacity 1s ease-in-out;
+    font-size: 2em;
+    margin-bottom: 15px;
 }
 
 .hide{
     opacity: 0;
+}
+
+.no{
+    margin-left: 25px;
 }
 </style>

@@ -2,7 +2,7 @@
     <main>
         <h1>Welcome to Planning Poker</h1>
         <div>
-            <p>Create room:</p>
+            <p>Create/join room:</p>
             <div class="input">
                 <input type="text" v-model="room">
                 <button @click="go">START</button>
