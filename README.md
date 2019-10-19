@@ -1,5 +1,5 @@
 # planning-poker
-Planing poker application with joint dashboard
+[Planing poker application](https://planning-poker-w.web.app) with joint dashboard
 
 ## Project setup
 ```
@@ -11,10 +11,7 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Build and deploy to Firebase
 ```
-npm run build
+npm run deploy
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -100,6 +100,7 @@ input{
 .sel >>> .card{
   height: 80vh;
   width: 80vw;
+  font-size: 2.5em;
 }
 
 @media (min-width: 1000px) { 
