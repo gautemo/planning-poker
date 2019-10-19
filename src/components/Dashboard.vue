@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div class="stats" :class="{ hide: !turned }">
-            <p>Average: <b>{{avg}}</b></p>
+        <p v-if="cards.length === 0">No players has joined yet</p>
+        <div v-else class="stats" :class="{ hide: !turned }">
             <p>Most voted: <b>{{most}}</b></p>
+            <p>Average: <b>{{avg}}</b></p>
         </div>
         <div class="grid">
             <Card v-for="card in sortedCards" :key="card.id" :number="card.value" :player="card.player" :turned="!turned"/>
@@ -44,8 +45,12 @@ export default {
         most(){
             let numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
             numbers = numbers.sort((a,b) => numbers.filter(v => v===a).length - numbers.filter(v => v===b).length);
-            const single = [...new Set(numbers)];
-            return single.filter(n => numbers.filter(v => v===numbers[0]).length === numbers.filter(v => v===n).length);
+            let single = [...new Set(numbers)];
+            single = single.filter(n => numbers.filter(v => v===numbers[0]).length === numbers.filter(v => v===n).length);
+            if(single.length === 1){
+                return single[0];
+            }
+            return single;
         }
     },
     components: {
@@ -71,8 +76,11 @@ export default {
     display: block;
 }
 
-.stats{
+p{
     color: white;
+}
+
+.stats{
     display: flex;
     margin: 0 25px;
 }

@@ -31,8 +31,13 @@ export default {
       selected: ''
     }
   },
-  async created(){
+  created(){
       this.updateDB();
+  },
+  async destroyed(){
+    const db = this.firebase.firestore();
+    const uid = this.firebase.auth().currentUser.uid;
+    await db.collection("rooms").doc(this.room).collection('players').doc(uid).delete();
   },
   methods: {
     setCard(value) {
