@@ -33,7 +33,12 @@ export default {
   },
   created(){
       this.updateDB();
+      const username = localStorage.getItem('username');
+      if(username){
+        this.name = username;
+      }
       window.addEventListener('beforeunload', async e => {
+        localStorage.setItem('username', this.name);
         const db = this.firebase.firestore();
         const uid = this.firebase.auth().currentUser.uid;
         await db.collection("rooms").doc(this.room).collection('players').doc(uid).delete();
@@ -100,7 +105,7 @@ input{
 .sel >>> .card{
   height: 80vh;
   width: 80vw;
-  font-size: 2.5em;
+  font-size: 8em;
 }
 
 @media (min-width: 1000px) { 
