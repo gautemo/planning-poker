@@ -34,6 +34,7 @@ export default {
 
 <style scoped>
 main{
+    margin: 0 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -57,5 +58,11 @@ input, button{
 
 button{
     margin: 0 15px;
+}
+
+@media (max-width: 650px) { 
+  input{
+      width: 150px;
+  }
 }
 </style>
