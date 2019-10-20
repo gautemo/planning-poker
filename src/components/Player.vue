@@ -17,7 +17,7 @@
     </div>
     <div v-else class="sel">
       <div class="x" @click="removeCard">X</div>
-      <Card @click="removeCard" :number="selected" />
+      <Card @click="removeCard" :number="selected" :selected="true"/>
     </div>
   </div>
 </template>
