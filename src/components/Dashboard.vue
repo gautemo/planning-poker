@@ -1,9 +1,13 @@
 <template>
     <div>
-        <p class="no" v-if="cards.length === 0">No players has joined yet</p>
-        <div v-else class="stats" :class="{ hide: !turned }">
-            <p>Most voted: <b>{{most}}</b></p>
-            <p>Average: <b>{{avg}}</b></p>
+        <div class="stats">
+            <div class="left" :class="{ hide: !turned }">
+                <p>Most voted: <b>{{most}}</b></p>
+                <p>Average: <b>{{avg}}</b></p>
+            </div>
+            <div class="right">
+                <p>{{cards.length}} players. Go to {{path}} to join</p>
+            </div>
         </div>
         <div class="grid">
             <Card v-for="card in sortedCards" :key="card.id" :number="card.value" :player="card.player" :turned="!turned"/>
@@ -16,20 +20,14 @@ export default {
     props: ['cards', 'turn'],
     computed:{
         sortedCards(){
-            return this.cards.sort((a,b) => {
+            return this.cards.filter(c => c.value).sort((a,b) => {
                 if(a.value === b.value){
                     return 0;
                 }
-                if(a.value === '?' && b.value === ''){
-                    return -1;
-                }
-                if(a.value === '' && b.value === '?'){
+                if(a.value === '?'){
                     return 1;
                 }
-                if(a.value === '' || a.value === '?'){
-                    return 1;
-                }
-                if(b.value === '' || b.value === '?'){
+                if(b.value === '?'){
                     return -1;
                 }
                 return parseInt(a.value, 10) - parseInt(b.value, 10);
@@ -52,6 +50,9 @@ export default {
                 return single[0];
             }
             return single;
+        },
+        path(){
+            return location.host + location.pathname;
         }
     },
     components: {
@@ -65,11 +66,11 @@ export default {
     margin: 2px 25px;
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
 }
 
 .grid >>> .card{
-    min-height: 350px;
+    min-height: 300px;
     position: absolute;
 }
 
@@ -90,9 +91,13 @@ p{
     margin: 10px 20px 0 0;
 }
 
+.left{
+    flex: 1;
+}
+
 .stats{
     transition: opacity 1s ease-in-out;
-    font-size: 2em;
+    font-size: 2.5em;
     margin-bottom: 15px;
 }
 
