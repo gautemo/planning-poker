@@ -4,7 +4,7 @@
         <div>
             <p>Create/join room:</p>
             <div class="input">
-                <input type="text" v-model="room">
+                <input type="text" v-model="room" @keyup.enter="go">
                 <button @click="go">START</button>
             </div>
         </div>

@@ -6,7 +6,8 @@
                 <p>Average: <b>{{avg}}</b></p>
             </div>
             <div class="right">
-                <p>{{cards.length}} players. Go to {{path}} to join</p>
+                <p>{{cards.length}} players</p> 
+                <p>Go to {{path}} to join</p>
             </div>
         </div>
         <div class="grid">
@@ -34,7 +35,7 @@ export default {
             });
         },
         turned(){
-            return this.cards.every(c => c.value) || !this.turn
+            return this.cards.length > 0 && this.cards.every(c => c.value) || !this.turn
         },
         avg(){
             const numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
@@ -91,7 +92,7 @@ p{
     margin: 10px 20px 0 0;
 }
 
-.left{
+.left, .right{
     flex: 1;
 }
 
