@@ -67,11 +67,14 @@ export default {
     margin: 2px 25px;
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+    grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
+}
+
+.grid >>> .all{
+    height: 200px;
 }
 
 .grid >>> .card{
-    min-height: 300px;
     position: absolute;
 }
 
@@ -108,5 +111,11 @@ p{
 
 .no{
     margin-left: 25px;
+}
+
+@media (max-width: 650px) { 
+  .stats{
+      font-size: 1em;
+  }
 }
 </style>
