@@ -103,9 +103,12 @@ input{
 }
 
 .sel >>> .card{
-  height: 80vh;
   width: 80vw;
   font-size: 8em;
+}
+
+.sel >>> .all{
+  height: 80vh;
 }
 
 @media (min-width: 1000px) { 

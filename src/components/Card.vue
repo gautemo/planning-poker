@@ -42,11 +42,11 @@ export default {
 .all{
     transition: transform 0.6s;
     transform-style: preserve-3d;
-    height: 35vw;
+    height: 20vh;
 }
 
 .card{
-    height: 90%;
+    height: calc(100% - 30px);
     width: 100%;
     border-radius: 10px;
     border: 2px solid black;

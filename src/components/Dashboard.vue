@@ -70,10 +70,6 @@ export default {
     grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
 }
 
-.grid >>> .all{
-    height: 200px;
-}
-
 .grid >>> .card{
     position: absolute;
 }
