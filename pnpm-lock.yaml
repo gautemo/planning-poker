@@ -10,6 +10,8 @@ specifiers:
   vite-plugin-pwa: ^0.12.0
   vue: ^3.2.37
   vue-tsc: ^0.38.1
+  workbox-core: ^6.5.3
+  workbox-precaching: ^6.5.3
   workbox-window: ^6.5.3
 
 dependencies:
@@ -24,6 +26,8 @@ devDependencies:
   vite: 2.9.12
   vite-plugin-pwa: 0.12.0_vite@2.9.12
   vue-tsc: 0.38.1_typescript@4.7.4
+  workbox-core: 6.5.3
+  workbox-precaching: 6.5.3
   workbox-window: 6.5.3
 
 packages:

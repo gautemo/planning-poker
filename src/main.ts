@@ -4,4 +4,6 @@ import { useRegisterSW } from 'virtual:pwa-register/vue'
 
 createApp(App).mount('#app')
 
-useRegisterSW()
+useRegisterSW({
+  immediate: true,
+})
