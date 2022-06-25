@@ -1,117 +1,130 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import Card from './Card.vue'
+import { db } from '../firebase'
+import { onSnapshot, collection } from 'firebase/firestore';
+
+const props = defineProps<{ room: string, manualTurned: boolean }>()
+
+interface PlayerCard { player: string, value: string }
+
+const cards = ref<Map<string, PlayerCard>>(new Map())
+onSnapshot(collection(db, 'rooms', props.room, 'players'), snapshot => {
+    snapshot.docChanges().forEach(change => {
+        if (change.type === 'added' || change.type === 'modified') {
+            cards.value.set(change.doc.id, change.doc.data() as PlayerCard)
+        }
+        if (change.type === 'removed') {
+            cards.value.delete(change.doc.id)
+        }
+    })
+})
+
+const sortedCards = computed(() => {
+    return [...cards.value.values()].filter(c => c.value).sort((a, b) => {
+        if (a.value === b.value) {
+            return 0;
+        }
+        if (a.value === '?') {
+            return 1;
+        }
+        if (b.value === '?') {
+            return -1;
+        }
+        return Number(a.value) - Number(b.value);
+    })
+})
+
+const turned = computed(() => props.manualTurned || (cards.value.size > 0 && [...cards.value.values()].every(c => c.value)))
+const avg = computed(() => {
+    const numbers = [...cards.value.values()].filter(c => c.value !== '' && c.value !== '?').map(c => Number(c.value));
+    const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length
+    return parseFloat(avg.toFixed(1));
+})
+const most = computed(() => {
+    let numbers = [...cards.value.values()].filter(c => c.value !== '' && c.value !== '?').map(c => Number(c.value));
+    numbers.sort((a, b) => numbers.filter(v => v === b).length - numbers.filter(v => v === a).length);
+    let single = [...new Set(numbers)];
+    single = single.filter(n => numbers.filter(v => v === numbers[0]).length === numbers.filter(v => v === n).length);
+    if (single.length === 1) {
+        return single[0];
+    }
+    return single;
+})
+
+const path = location.host + location.pathname
+</script>
+
 <template>
     <div>
         <div class="stats">
             <div class="left" :class="{ hide: !turned }">
-                <p>Most voted: <b>{{most}}</b></p>
-                <p>Average: <b>{{avg}}</b></p>
+                <p>Most voted: <b>{{ most }}</b></p>
+                <p>Average: <b>{{ avg }}</b></p>
             </div>
             <div class="right">
-                <p>{{cards.length}} players</p> 
-                <p>Go to {{path}} to join</p>
+                <p>{{ cards.size }} players</p>
+                <p>Go to {{ path }} to join</p>
             </div>
         </div>
         <div class="grid">
-            <Card v-for="card in sortedCards" :key="card.id" :number="card.value" :player="card.player" :turned="!turned"/>
+            <Card v-for="(card, i) in sortedCards" :key="i" :number="card.value" :player="card.player"
+                :turned="!turned" />
         </div>
     </div>
 </template>
 
-<script>
-export default {
-    props: ['cards', 'turn'],
-    computed:{
-        sortedCards(){
-            return this.cards.filter(c => c.value).sort((a,b) => {
-                if(a.value === b.value){
-                    return 0;
-                }
-                if(a.value === '?'){
-                    return 1;
-                }
-                if(b.value === '?'){
-                    return -1;
-                }
-                return parseInt(a.value, 10) - parseInt(b.value, 10);
-            });
-        },
-        turned(){
-            return this.cards.length > 0 && this.cards.every(c => c.value) || !this.turn
-        },
-        avg(){
-            const numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
-            const avg = numbers.reduce((a,b) => a + b, 0) / numbers.length
-            return parseFloat(avg.toFixed(1));
-        },
-        most(){
-            let numbers = this.cards.filter(c => c.value !== '' && c.value !== '?').map(c => parseInt(c.value, 10));
-            numbers.sort((a,b) => numbers.filter(v => v===b).length - numbers.filter(v => v===a).length);
-            let single = [...new Set(numbers)];
-            single = single.filter(n => numbers.filter(v => v===numbers[0]).length === numbers.filter(v => v===n).length);
-            if(single.length === 1){
-                return single[0];
-            }
-            return single;
-        },
-        path(){
-            return location.host + location.pathname;
-        }
-    },
-    components: {
-        Card: () => import('@/components/Card')
-    }
-}
-</script>
-
 <style scoped>
-.grid{
+.grid {
     margin: 2px 25px;
     display: grid;
     grid-gap: 20px;
-    grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 }
 
-.grid >>> .card{
+.grid :deep(.card) {
     position: absolute;
 }
 
-.grid >>> .back{
+.grid :deep(.back) {
     display: block;
 }
 
-p{
+p {
     color: white;
 }
 
-.stats{
+.stats {
     display: flex;
     margin: 0 25px;
 }
 
-.stats p{
+.stats p {
     margin: 10px 20px 0 0;
 }
 
-.left, .right{
+.left,
+.right {
     flex: 1;
 }
 
-.stats{
+.stats {
     transition: opacity 1s ease-in-out;
     font-size: 2.5em;
     margin-bottom: 15px;
 }
 
-.hide{
+.hide {
     opacity: 0;
 }
 
-.no{
+.no {
     margin-left: 25px;
 }
 
-@media (max-width: 650px) { 
-  .stats{
-      font-size: 1em;
-  }
+@media (max-width: 650px) {
+    .stats {
+        font-size: 1em;
+    }
 }
 </style>

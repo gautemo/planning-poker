@@ -1,34 +1,32 @@
+<script setup lang="ts">
+const props = defineProps<{
+  modelValue: boolean,
+}>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
+
+const prefers: boolean = JSON.parse(localStorage.getItem('hide-pref') ?? 'false')
+if(prefers !== props.modelValue){
+  emit('update:modelValue', prefers)
+}
+
+function toggle(checked: boolean){
+  localStorage.setItem('hide-pref', checked.toString())
+  emit('update:modelValue', checked)
+}
+</script>
+
 <template>
-    <label @click.stop="$emit('toggle')" class="switch">
-        <label for="switch">{{label}}</label>
-        <input id="switch" type="checkbox" v-model="checked">
+    <label @click.stop class="switch">
+        Hide
+        <input 
+          type="checkbox" 
+          :checked="modelValue" 
+          @change="toggle(($event.target as HTMLInputElement).checked)">
         <span class="slider round"></span>
     </label>
 </template>
-
-<script>
-export default {
-    props: ['storage', 'label'],
-    created(){
-        const pref = JSON.parse(localStorage.getItem(this.storage));
-        if(pref){
-            this.checked = pref;
-            this.$emit('click', pref);
-        }
-    },
-    data(){
-        return {
-            checked: false
-        }
-    },
-    watch: {
-        checked: function(newVal){
-            localStorage.setItem(this.storage, newVal);
-            this.$emit('click', newVal);
-        }
-    }
-}
-</script>
 
 <style scoped>
 .switch {

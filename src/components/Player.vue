@@ -1,69 +1,64 @@
+<script setup lang="ts">
+import Card from './Card.vue'
+import { db } from '../firebase'
+import { setDoc, deleteDoc, doc } from 'firebase/firestore';
+import { getAuth } from "firebase/auth";
+import { ref } from 'vue';
+
+const props = defineProps<{ room: string }>()
+const selected = ref('')
+const name = ref(localStorage.getItem('username') ?? 'Anonym')
+
+function updateDB() {
+  const uid = getAuth().currentUser!.uid;
+  setDoc(doc(db, 'rooms', props.room, 'players', uid), { player: name.value, value: selected.value })
+}
+updateDB()
+
+window.addEventListener('beforeunload', async e => {
+  localStorage.setItem('username', name.value);
+  const uid = getAuth().currentUser!.uid;
+  await deleteDoc(doc(db, 'rooms', props.room, 'players', uid))
+});
+
+function setCard(value: string) {
+  selected.value = value
+  updateDB()
+}
+
+function removeCard() {
+  selected.value = ''
+  updateDB()
+}
+
+const options = [
+  '0',
+  '1',
+  '2',
+  '3',
+  '5',
+  '8',
+  '13',
+  '21',
+  '40',
+  '80',
+  '100',
+  '?',
+]
+</script>
+
 <template>
   <div>
     <input type="text" v-model="name" />
     <div v-if="!selected" class="cards">
-      <Card v-on:click="setCard($event)" number="0" />
-      <Card v-on:click="setCard($event)" number="1" />
-      <Card v-on:click="setCard($event)" number="2" />
-      <Card v-on:click="setCard($event)" number="3" />
-      <Card v-on:click="setCard($event)" number="5" />
-      <Card v-on:click="setCard($event)" number="8" />
-      <Card v-on:click="setCard($event)" number="13" />
-      <Card v-on:click="setCard($event)" number="21" />
-      <Card v-on:click="setCard($event)" number="40" />
-      <Card v-on:click="setCard($event)" number="80" />
-      <Card v-on:click="setCard($event)" number="100" />
-      <Card v-on:click="setCard($event)" number="?" />
+      <Card v-for="option of options" :key="option" @click="setCard(option)" :number="option"/>
     </div>
     <div v-else class="sel">
       <div class="x" @click="removeCard">X</div>
-      <Card @click="removeCard" :number="selected" :selected="true"/>
+      <Card @click="removeCard" :number="selected" :selected="true" />
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  props: ['firebase', 'room'],
-  data() {
-    return {
-      name: 'Anonym',
-      selected: ''
-    }
-  },
-  created(){
-      this.updateDB();
-      const username = localStorage.getItem('username');
-      if(username){
-        this.name = username;
-      }
-      window.addEventListener('beforeunload', async e => {
-        localStorage.setItem('username', this.name);
-        const db = this.firebase.firestore();
-        const uid = this.firebase.auth().currentUser.uid;
-        await db.collection("rooms").doc(this.room).collection('players').doc(uid).delete();
-      });
-  },
-  methods: {
-    setCard(value) {
-      this.selected = value;
-      this.updateDB();
-    },
-    removeCard() {
-      this.selected = '';
-      this.updateDB();
-    },
-    async updateDB(){
-      const db = this.firebase.firestore();
-      const uid = this.firebase.auth().currentUser.uid;
-      db.collection("rooms").doc(this.room).collection('players').doc(uid).set({player: this.name, value: this.selected});
-    }
-  },
-  components: {
-    Card: () => import('@/components/Card')
-  }
-}
-</script>
 
 <style scoped>
 .cards {
@@ -73,7 +68,7 @@ export default {
   grid-gap: 20px;
 }
 
-input{
+input {
   width: calc(100% - 10px);
   margin: 5px;
   box-sizing: border-box;
@@ -81,14 +76,14 @@ input{
   padding: 5px;
 }
 
-.x{
+.x {
   display: flex;
   justify-content: flex-end;
   cursor: pointer;
   width: 80vw;
 }
 
-.sel{
+.sel {
   height: 100vh;
   background: rgba(128, 128, 128, 0.5);
   position: absolute;
@@ -102,29 +97,29 @@ input{
   align-items: center;
 }
 
-.sel >>> .card{
+.sel :deep(.card) {
   width: 80vw;
   font-size: 8em;
 }
 
-.sel >>> .all{
+.sel :deep(.all) {
   height: 80vh;
 }
 
-@media (min-width: 1000px) { 
-  .cards{
+@media (min-width: 1000px) {
+  .cards {
     margin: 10px 400px;
   }
 
-  .cards >>> .card{
+  .cards :deep(.card) {
     min-height: 200px;
   }
 
-  .sel >>> .card{
+  .sel :deep(.card) {
     width: 40vw;
   }
 
-  .x{
+  .x {
     width: 40vw;
   }
 }

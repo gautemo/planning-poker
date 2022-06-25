@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const url = location.hostname
+const room = Math.random().toString(36).substring(2, 6)
+function go(){
+    location.href = room
+}
+</script>
+
 <template>
     <main>
         <h1>Welcome to Planning Poker</h1>
@@ -11,26 +19,6 @@
         <p>Tell every team member to open their browser and go to your room: <b><span>{{url}}<i>/your-room</i></span></b></p>
     </main>
 </template>
-
-<script>
-export default {
-    computed: {
-        url(){
-            return location.hostname;
-        }
-    },
-    data(){
-        return {
-            room: Math.random().toString(36).substring(2, 6)
-        }
-    },
-    methods: {
-        go(){
-            location.href = this.room;
-        }
-    }
-}
-</script>
 
 <style scoped>
 main{

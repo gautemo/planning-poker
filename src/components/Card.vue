@@ -1,38 +1,39 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue';
+import Switcher from './Switch.vue'
+
+const hiddenEmojis = ['🙈', '🙊', '💤', '🤫', '😑', '😌', '😎'];
+
+defineEmits<{
+  (e: 'click'): void
+}>()
+
+const props = defineProps<{
+    number: string,
+    player?: string,
+    turned?: boolean,
+    selected?: boolean,
+}>()
+
+const hide = ref(false)
+const num = computed(() => {
+    if(hide.value && props.selected){
+        return hiddenEmojis[Math.floor(Math.random()*hiddenEmojis.length)]
+    }
+    return props.number
+})
+</script>
+
 <template>
-    <div @click="$emit('click', number)" class="all" :class="{turned: turned}">
+    <div @click="$emit('click')" class="all" :class="{turned: turned}">
         <p v-if="player" :class="{ hide: turned }">{{player}}</p>
         <div class="card front">
-            <Switcher v-if="this.selected" v-on:click="hide = $event" storage="hide-pref" label="Hide" />
+            <Switcher v-if="selected" v-model="hide" />
             {{num}}
         </div>
         <div class="card back"></div>
     </div>
 </template>
-
-<script>
-const hiddenEmojis = ['🙈', '🙊', '💤', '🤫', '😑', '😌', '😎'];
-
-export default {
-    props: ['number', 'player', 'turned', 'selected'],
-    data(){
-        return{
-            hide: false
-        }
-    },
-    computed:{
-        num(){
-            if(this.hide && this.selected){
-                return hiddenEmojis[Math.floor(Math.random()*hiddenEmojis.length)];
-            }else{
-                return this.number;
-            }
-        }
-    },
-    components: {
-        Switcher: () => import('@/components/Switch')
-    }
-}
-</script>
 
 <style scoped>
 .turned{
@@ -81,7 +82,7 @@ p{
     opacity: 0;
 }
 
-.card >>> .switch{
+.card :deep(.switch){
     position: absolute;
     top: 15px;
     left: 15px;
