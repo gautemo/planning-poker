@@ -23,6 +23,7 @@ const room = location.pathname.replace('/', '')
 body {
   margin: 0;
   background-image: linear-gradient(90deg, #00312b 10%, #001714 100%);
+  color: white;
   font-family: 'Nunito', sans-serif;
 }
 

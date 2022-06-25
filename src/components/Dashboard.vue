@@ -90,10 +90,6 @@ const path = location.host + location.pathname
     display: block;
 }
 
-p {
-    color: white;
-}
-
 .stats {
     display: flex;
     margin: 0 25px;

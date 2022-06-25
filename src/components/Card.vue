@@ -67,13 +67,13 @@ const num = computed(() => {
     align-items: center;
     cursor: pointer;
     background: white;
+    color: rgb(29, 29, 29);
 }
 
 p{
     text-align: center;
     margin: 5px;
     font-size: 1.5em;
-    color: white;
     font-weight: bold;
     transition: opacity 1s ease-in-out;
 }
