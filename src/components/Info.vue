@@ -10,9 +10,9 @@ function go(){
     <main>
         <h1>Welcome to Planning Poker</h1>
         <div>
-            <p>Create/join room:</p>
+            <label for="room">Create/join room:</label>
             <div class="input">
-                <input type="text" v-model="room" @keyup.enter="go">
+                <input type="text" v-model="room" @keyup.enter="go" id="room">
                 <button @click="go">START</button>
             </div>
         </div>
@@ -30,7 +30,8 @@ main{
     font-size: 1.3em;
 }
 
-p{
+label{
+    display: block;
     margin: 2px;
 }
 
