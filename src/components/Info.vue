@@ -18,8 +18,10 @@ function join(){
             <label for="room">Room id:</label>
             <div class="input">
                 <input type="text" v-model="room" id="room">
-                <button @click="create">CREATE</button>
-                <button @click="join">JOIN</button>
+                <div class="buttons">
+                    <button @click="create">CREATE</button>
+                    <button @click="join">JOIN</button>
+                </div>
             </div>
         </div>
         <p>Tell every team member to open their browser and go to your room: <b><span>{{url}}/{{room}}</span></b></p>
@@ -43,21 +45,23 @@ label{
 
 .input{
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 30px;
     gap: 15px;
 }
 
+.buttons {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+}
+
 input, button{
     font-size: 1em;
+    flex: 1;
 }
 
 button{
     margin: 0;
-}
-
-@media (max-width: 650px) { 
-  input{
-      width: 150px;
-  }
 }
 </style>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import Info from './components/Info.vue'
-import Dashboard from './components/Dashboard.vue';
-import Player from './components/Player.vue';
+import { defineAsyncComponent } from 'vue';
+
+const Player = defineAsyncComponent(() => import('./components/Player.vue'))
+const Dashboard = defineAsyncComponent(() => import('./components/Dashboard.vue'))
+const Info = defineAsyncComponent(() => import('./components/Info.vue'))
 
 const [room, isDashboard] = location.pathname.replace('/', '').split('/')
 </script>
