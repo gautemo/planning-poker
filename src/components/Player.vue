@@ -1,24 +1,32 @@
 <script setup lang="ts">
-import Card from './Card.vue'
-import { db } from '../firebase'
-import { setDoc, deleteDoc, doc } from 'firebase/firestore';
+import PlayerCard from './PlayerCard.vue'
+import { db, signIn } from '../firebase'
+import { setDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
 import { ref } from 'vue';
+import { PlayerData } from '../types'
 
 const props = defineProps<{ room: string }>()
+
 const selected = ref('')
 const name = ref(localStorage.getItem('username') ?? 'Anonym')
 
+await signIn();
+const uid = getAuth().currentUser!.uid;
+const playerDoc = doc(db, 'rooms', props.room, 'players', uid)
+onSnapshot(playerDoc, (doc) => {
+    const data = doc.data() as PlayerData
+    if(data.value !== selected.value) selected.value = data.value
+});
+
 function updateDB() {
-  const uid = getAuth().currentUser!.uid;
-  setDoc(doc(db, 'rooms', props.room, 'players', uid), { player: name.value, value: selected.value })
+  setDoc(playerDoc, { player: name.value, value: selected.value })
 }
 updateDB()
 
 window.addEventListener('beforeunload', async e => {
   localStorage.setItem('username', name.value);
-  const uid = getAuth().currentUser!.uid;
-  await deleteDoc(doc(db, 'rooms', props.room, 'players', uid))
+  await deleteDoc(playerDoc)
 });
 
 function setCard(value: string) {
@@ -48,29 +56,39 @@ const options = [
 </script>
 
 <template>
-  <div>
+  <section>
     <input type="text" v-model="name" />
     <div v-if="!selected" class="cards">
-      <Card v-for="option of options" :key="option" @click="setCard(option)" :number="option"/>
+      <PlayerCard v-for="option of options" :key="option" @click="setCard(option)" :number="option"/>
     </div>
-    <div v-else class="sel">
-      <div class="x" @click="removeCard">X</div>
-      <Card @click="removeCard" :number="selected" :selected="true" />
+    <div v-else class="selected">
+      <div class="content">
+        <div class="x" @click="removeCard">X</div>
+        <PlayerCard @click="removeCard" :number="selected" :selected="true" />
+      </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped>
+section {
+  height: 100%;
+  max-width: 750px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 15px;
+  gap: 5px;
+  box-sizing: border-box;
+}
+
 .cards {
-  margin: 15px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 20px;
+  grid-gap: 15px;
 }
 
 input {
-  width: calc(100% - 10px);
-  margin: 5px;
   box-sizing: border-box;
   font-size: 1.2em;
   padding: 5px;
@@ -80,10 +98,10 @@ input {
   display: flex;
   justify-content: flex-end;
   cursor: pointer;
-  width: 80vw;
+  font-size: 1.2rem;
 }
 
-.sel {
+.selected {
   height: 100vh;
   background: rgba(128, 128, 128, 0.5);
   position: absolute;
@@ -97,30 +115,12 @@ input {
   align-items: center;
 }
 
-.sel :deep(.card) {
-  width: 80vw;
-  font-size: 8em;
-}
-
-.sel :deep(.all) {
-  height: 80vh;
-}
-
-@media (min-width: 1000px) {
-  .cards {
-    margin: 10px 400px;
-  }
-
-  .cards :deep(.card) {
-    min-height: 200px;
-  }
-
-  .sel :deep(.card) {
-    width: 40vw;
-  }
-
-  .x {
-    width: 40vw;
-  }
+.content {
+  height: 80%;
+  width: 80%;
+  max-width: 720px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  font-size: 3em;
 }
 </style>

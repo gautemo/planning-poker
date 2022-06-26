@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
 const url = location.hostname
-const room = Math.random().toString(36).substring(2, 6)
-function go(){
-    location.href = room
+const room = ref(Math.random().toString(36).substring(2, 6))
+function create(){
+    location.href = `${room.value}/dashboard`
+}
+function join(){
+    location.href = room.value
 }
 </script>
 
@@ -10,13 +15,14 @@ function go(){
     <main>
         <h1>Welcome to Planning Poker</h1>
         <div>
-            <label for="room">Create/join room:</label>
+            <label for="room">Room id:</label>
             <div class="input">
-                <input type="text" v-model="room" @keyup.enter="go" id="room">
-                <button @click="go">START</button>
+                <input type="text" v-model="room" id="room">
+                <button @click="create">CREATE</button>
+                <button @click="join">JOIN</button>
             </div>
         </div>
-        <p>Tell every team member to open their browser and go to your room: <b><span>{{url}}<i>/your-room</i></span></b></p>
+        <p>Tell every team member to open their browser and go to your room: <b><span>{{url}}/{{room}}</span></b></p>
     </main>
 </template>
 
@@ -38,6 +44,7 @@ label{
 .input{
     display: flex;
     margin-bottom: 30px;
+    gap: 15px;
 }
 
 input, button{
@@ -45,7 +52,7 @@ input, button{
 }
 
 button{
-    margin: 0 15px;
+    margin: 0;
 }
 
 @media (max-width: 650px) { 

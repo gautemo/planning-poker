@@ -1,24 +1,28 @@
 <script setup lang="ts">
-import Room from './components/Room.vue'
 import Info from './components/Info.vue'
+import Dashboard from './components/Dashboard.vue';
+import Player from './components/Player.vue';
 
-const room = location.pathname.replace('/', '')
+const [room, isDashboard] = location.pathname.replace('/', '').split('/')
 </script>
 
 <template>
-  <div>
     <Suspense>
-      <Room v-if="room" :room="room" />
+      <Dashboard v-if="isDashboard" :room="room"/>
+      <Player v-else-if="room" :room="room"/>
       <Info v-else />
       <template #fallback>
         Loading...
       </template>
     </Suspense>
-  </div>
 </template>
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+
+html, body, #app {
+  height: 100%;
+}
 
 body {
   margin: 0;

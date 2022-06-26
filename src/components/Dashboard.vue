@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import Card from './Card.vue'
-import { db } from '../firebase'
-import { onSnapshot, collection } from 'firebase/firestore';
+import { signIn } from '../firebase';
+import { enterRoom, cards, clearCards } from '../roomDB';
+import DashboardCard from './DashboardCard.vue';
+import DashboardKickPlayer from './DashboardKickPlayer.vue';
 
-const props = defineProps<{ room: string, manualTurned: boolean }>()
+await signIn();
 
-interface PlayerCard { player: string, value: string }
+const props = defineProps<{ room: string }>()
 
-const cards = ref<Map<string, PlayerCard>>(new Map())
-onSnapshot(collection(db, 'rooms', props.room, 'players'), snapshot => {
-    snapshot.docChanges().forEach(change => {
-        if (change.type === 'added' || change.type === 'modified') {
-            cards.value.set(change.doc.id, change.doc.data() as PlayerCard)
-        }
-        if (change.type === 'removed') {
-            cards.value.delete(change.doc.id)
-        }
-    })
-})
+const manuelTurned = ref(false)
+
+enterRoom(props.room)
 
 const sortedCards = computed(() => {
     return [...cards.value.values()].filter(c => c.value).sort((a, b) => {
@@ -35,7 +28,7 @@ const sortedCards = computed(() => {
     })
 })
 
-const turned = computed(() => props.manualTurned || (cards.value.size > 0 && [...cards.value.values()].every(c => c.value)))
+const turned = computed(() => manuelTurned.value || (cards.value.size > 0 && [...cards.value.values()].every(c => c.value)))
 const avg = computed(() => {
     const numbers = [...cards.value.values()].filter(c => c.value !== '' && c.value !== '?').map(c => Number(c.value));
     const avg = numbers.reduce((a, b) => a + b, 0) / numbers.length
@@ -52,29 +45,48 @@ const most = computed(() => {
     return single;
 })
 
-const path = location.host + location.pathname
+const path = `${location.host}/${props.room}`
+const joinAsPlayer = () => location.href = `/${props.room}` 
+
+const kicking = ref(false)
 </script>
 
 <template>
-    <div>
-        <div class="stats">
-            <div class="left" :class="{ hide: !turned }">
-                <p>Most voted: <b>{{ most }}</b></p>
-                <p>Average: <b>{{ avg }}</b></p>
-            </div>
-            <div class="right">
-                <p>{{ cards.size }} players</p>
-                <p>Go to {{ path }} to join</p>
-            </div>
+    <div class="actions">
+        <button @click="manuelTurned = !manuelTurned">
+            <span v-if="manuelTurned">Hide</span>
+            <span v-else>Show</span>
+        </button>
+        <button @click="clearCards">Clear cards</button>
+        <button @click="kicking = !kicking">Kick player</button>
+        <button @click="joinAsPlayer">Join as player</button>
+    </div>
+    <DashboardKickPlayer v-if="kicking" @kicked="kicking = false"/>
+    <div class="stats">
+        <div :class="{ hide: !turned }">
+            <p>Most voted: <b>{{ most }}</b></p>
+            <p>Average: <b>{{ avg }}</b></p>
         </div>
-        <div class="grid">
-            <Card v-for="(card, i) in sortedCards" :key="i" :number="card.value" :player="card.player"
-                :turned="!turned" />
+        <div class="right">
+            <p>{{ cards.size }} players</p>
+            <p>Go to {{ path }} to join</p>
         </div>
+    </div>
+    <div class="grid">
+        <DashboardCard 
+            v-for="(card, i) in sortedCards" :key="i" 
+            :number="card.value" 
+            :player="card.player"
+            :turned="!turned" 
+        />
     </div>
 </template>
 
 <style scoped>
+button {
+    min-width: 100px;
+}
+
 .grid {
     margin: 2px 25px;
     display: grid;
@@ -92,22 +104,21 @@ const path = location.host + location.pathname
 
 .stats {
     display: flex;
-    margin: 0 25px;
+    justify-content: space-between;
+    font-size: 2.5em;
+    margin-bottom: 15px;
 }
 
 .stats p {
-    margin: 10px 20px 0 0;
+    margin: 5px 25px;
 }
 
-.left,
 .right {
-    flex: 1;
+    text-align: end;
 }
 
-.stats {
-    transition: opacity 1s ease-in-out;
-    font-size: 2.5em;
-    margin-bottom: 15px;
+.stats > div {
+    transition: opacity 0.2s ease-in-out;
 }
 
 .hide {

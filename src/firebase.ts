@@ -18,7 +18,9 @@ const auth = getAuth()
 const db = getFirestore(app)
 
 async function signIn(){
-  await signInAnonymously(auth);
+  if(!auth.currentUser){
+    await signInAnonymously(auth);
+  }
 }
 
 export { signIn, db }

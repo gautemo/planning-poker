@@ -1,35 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Switcher from './Switch.vue'
-
-const hiddenEmojis = ['🙈', '🙊', '💤', '🤫', '😑', '😌', '😎'];
-
-defineEmits<{
-  (e: 'click'): void
-}>()
-
-const props = defineProps<{
+defineProps<{
     number: string,
-    player?: string,
-    turned?: boolean,
-    selected?: boolean,
+    player: string,
+    turned: boolean,
 }>()
-
-const hide = ref(false)
-const num = computed(() => {
-    if(hide.value && props.selected){
-        return hiddenEmojis[Math.floor(Math.random()*hiddenEmojis.length)]
-    }
-    return props.number
-})
 </script>
 
 <template>
-    <div @click="$emit('click')" class="all" :class="{turned: turned}">
-        <p v-if="player" :class="{ hide: turned }">{{player}}</p>
+    <div class="all" :class="{turned: turned}">
+        <p :class="{ hide: turned }">{{player}}</p>
         <div class="card front">
-            <Switcher v-if="selected" v-model="hide" />
-            {{num}}
+            {{number}}
         </div>
         <div class="card back"></div>
     </div>
@@ -65,7 +46,6 @@ const num = computed(() => {
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
     background: white;
     color: rgb(29, 29, 29);
 }
