@@ -68,7 +68,7 @@ const kicking = ref(false)
             <p>Average: <b>{{ avg }}</b></p>
         </div>
         <div class="right">
-            <p>{{ cards.value.size }} players</p>
+            <p>{{ cards.size }} players</p>
             <p>Go to {{ path }} to join</p>
         </div>
     </div>
