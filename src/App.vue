@@ -20,7 +20,7 @@ const [room, isDashboard] = location.pathname.replace('/', '').split('/')
 </template>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Nunito&display=swap');
+@import url('https://fonts.bunny.net/css?family=Nunito&display=swap');
 
 html, body, #app {
   height: 100%;

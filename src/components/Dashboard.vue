@@ -45,7 +45,7 @@ const most = computed(() => {
     return single;
 })
 
-const path = `${location.host}/${props.room}`
+const path = `https://planpoker.app/${props.room}`
 const joinAsPlayer = () => location.href = `/${props.room}` 
 
 const kicking = ref(false)
@@ -68,7 +68,7 @@ const kicking = ref(false)
             <p>Average: <b>{{ avg }}</b></p>
         </div>
         <div class="right">
-            <p>{{ cards.size }} players</p>
+            <p>{{ cards.value.size }} players</p>
             <p>Go to {{ path }} to join</p>
         </div>
     </div>
